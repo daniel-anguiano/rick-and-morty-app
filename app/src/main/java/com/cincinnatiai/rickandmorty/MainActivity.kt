@@ -25,19 +25,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import com.cincinnatiai.rickandmorty.ui.theme.RickAndMortyTheme
-import com.cincinnatiai.rickandmorty.viewmodel.MyViewModel
+import com.cincinnatiai.rickandmorty.viewmodel.CharactersViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cincinnatiai.rickandmorty.data.Character
+import com.cincinnatiai.rickandmorty.viewmodel.CharactersViewModelProvider
 
 class MainActivity : ComponentActivity() {
+
+    val charactersViewModel: CharactersViewModel by lazy {
+        ViewModelProvider(this, CharactersViewModelProvider())[CharactersViewModel::class.java]
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val myViewModel: MyViewModel = viewModel()
-            val characters by myViewModel.characters.observeAsState(initial = emptyList())
+
+            val characters by charactersViewModel.characters.observeAsState(initial = emptyList())
 
             Column(
                 modifier = Modifier
@@ -46,7 +52,7 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(onClick = { myViewModel.fetchCharacters() }) {
+                Button(onClick = { charactersViewModel.fetchCharacters() }) {
                     Text("Fetch Characters")
                 }
                 if (characters.isNotEmpty()) {
